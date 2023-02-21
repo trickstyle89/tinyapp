@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
 
@@ -14,9 +14,9 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("urls/:id", (req, res) => {
-    const templateVars = { id: req.params.id, longURL: /*he URL that needs to be converted?*/ };
-    res.render("urls_show", templateVars);
+app.get("/urls/:id", (req, res) => {
+  const templateVars = { id: req.params.id, longURL: urlDatabase["b2xVn2"] };
+  res.render("urls_show", templateVars);
 });
 
 app.get("/", (req, res) => {
