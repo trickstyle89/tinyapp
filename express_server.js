@@ -21,6 +21,13 @@ const urlDatabase = {
 
 app.use(express.urlencoded({ extended: true }));
 
+app.post("/urls/:id/delete", (req, res) => {
+  console.log(req.param.id);
+  console.log(req.body.id);
+  const id = req.body.id;
+  delete urlDatabase[id];
+  res.redirect("/urls");
+});
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
@@ -38,7 +45,7 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
-  const shortURL = generateRandomString();  
+  const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
   res.redirect("/urls/" + shortURL);
 });

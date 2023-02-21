@@ -46,6 +46,7 @@
           <tr>
             <th scope="col">Short URL ID</th>
             <th scope="col">Long URL</th>
+            <th scope="col">Delete URL</th>
           </tr>
         </thead>
         <tbody>
@@ -53,6 +54,10 @@
             <tr>
               <td><%= id %></td>
               <td><%= urls[id] %></td>
+              <td><form method="POST" action="/urls/<%= id %>/delete">
+                <input type="hidden" name="id" value="<%= id %>">
+                <button type = 'submit' name="newURL" value='Delete'>Delete</button>
+              </form></td>
             </tr>
           <% } %>
         </tbody>
