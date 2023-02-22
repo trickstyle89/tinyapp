@@ -25,7 +25,10 @@
     <header>
       <nav>
         <% if (username) { %>
-          <span> <%= username %> </span>
+          <span>Logged in as: <%= username %>!</span>
+          <form method="POST" action="/logout">
+            <button type="submit">Logout</button>
+          </form>
         <% } %>
       </nav>
     </header>
