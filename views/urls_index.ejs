@@ -46,6 +46,7 @@
           <tr>
             <th scope="col">Short URL ID</th>
             <th scope="col">Long URL</th>
+            <th scope="col">Edit URL</th>
             <th scope="col">Delete URL</th>
           </tr>
         </thead>
@@ -53,7 +54,13 @@
           <% for (let id in urls) { %>
             <tr>
               <td><%= id %></td>
-              <td><%= urls[id] %></td>
+              <td><%= urls[id].longURL %></td>
+              
+              <td><form method="GET" action="/urls/<%= id %>">
+                <input type="hidden" name="longURL" value="<%= urls[id].longURL %>">
+                <button type = 'submit' name="editURL" value='Edit'>Edit</button>
+                </form>
+
               <td><form method="POST" action="/urls/<%= id %>/delete">
                 <input type="hidden" name="id" value="<%= id %>">
                 <button type = 'submit' name="newURL" value='Delete'>Delete</button>

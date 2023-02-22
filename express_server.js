@@ -15,34 +15,57 @@ const generateRandomString = function() {
 };
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+    "b2xVn2": { longURL: "http://www.lighthouselabs.ca" },
+    "9sm5xK": { longURL: "http://www.google.com" }
+  };
 
 app.use(express.urlencoded({ extended: true }));
 
+
+/*
+  app.post("/urls/:id", (req, res) => {
+    const id = req.params.id;
+    const newLongURL = req.body.editURL;
+    const updatedUrlDatabase = Object.assign({}, urlDatabase, { [id]: newLongURL });
+    urlDatabase = updatedUrlDatabase;
+    res.redirect("/urls");
+  });
+*/
+
+// edit entries
+app.post("/urls/:id", (req, res) => {
+  const id = req.params.id;
+  const urlObj = { ...urlDatabase[id] };
+  urlObj.longURL = req.body.editURL;
+  urlDatabase[id] = urlObj;
+  res.redirect("/urls");
+});
+
+// delete entries
 app.post("/urls/:id/delete", (req, res) => {
-  console.log(req.param.id);
-  console.log(req.body.id);
   const id = req.body.id;
   delete urlDatabase[id];
   res.redirect("/urls");
 });
 
+// index of all entries
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// creation of new URL
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
     
+// new entry confirmation 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase };
   res.render("urls_show", templateVars);
 });
 
+// tinyApp URL creator
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
