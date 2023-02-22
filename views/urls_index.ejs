@@ -18,10 +18,11 @@
       crossorigin="anonymous"
     />
 
-    <%- include('partials/_header') %>
 
   </head>
+
   <body>
+    <%- include('partials/_header') %>
    
     <main style="margin: 1em;">
       <h3>My URLs</h3>
@@ -45,7 +46,7 @@
                 <input type="hidden" name="longURL" value="<%= urls[id].longURL %>">
                 <button type = 'submit' name="editURL" value='Edit'>Edit</button>
                 </form>
-              </td>
+                </td>
 
               <td>
                 <form method="POST" action="/urls/<%= id %>/delete">
