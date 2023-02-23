@@ -16,6 +16,17 @@ const generateRandomString = function() {
   return result;
 };
 
+// checks to see if user has account.
+const getUserByEmail = function(email) {
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
+};
+
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -40,6 +51,17 @@ app.use(express.urlencoded({ extended: true }));
 //user form
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400).send("Email and password cannot be empty");
+    return;
+  }
+
+  if (getUserByEmail(email)) {
+    res.status(400).send("Email is already registered");
+    return;
+  }
+
   const userId = generateRandomString();
   const newUser = {
     id: userId,
@@ -54,9 +76,7 @@ app.post("/register", (req, res) => {
 //user Registration
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_Id], //does not return a value
-    // urls: urlDatabase,
-    // email: users[req.cookies.user_id] //does not return a value
+    user: users[req.cookies.user_Id]
   };
   res.render('register', templateVars);
 });
@@ -82,9 +102,7 @@ app.post("/urls/:id/delete", (req, res) => {
 // creation of new URL
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_id], //does not return a value
-    // urls: urlDatabase,
-    // email: users[req.cookies.user_id] //does not return a value
+    user: users[req.cookies.user_id]
   };
   console.log(Object.entries(templateVars));
   console.log(users[req.cookies.user_id.email]);
@@ -138,9 +156,8 @@ res.redirect('/register');
 //cookies for Username
 app.get("/urls", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_id], //does not return a value
+    user: users[req.cookies.user_id],
     urls: urlDatabase,
-    //email: users[req.cookies.user_id] //does not return a value
   };
   res.render("urls_index", templateVars);
 });
