@@ -27,6 +27,17 @@ const getUserByEmail = function(email) {
   return null;
 };
 
+//middleware for login check
+const requireLogin = (req, res, next) => {
+  if (!req.user) {
+    return res.redirect("/login");
+  }
+  // Set user property on req object
+  req.user = users[req.session.user];
+  console.log(`Req.user${req.user}`);
+  next();
+};
+
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -48,10 +59,41 @@ const urlDatabase = {
 
 app.use(express.urlencoded({ extended: true }));
 
+//log in
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  let userFound = false;
+  let userID;
+
+  for (const user in users) {
+    if (users[user].email === email && users[user].password === password) {
+      userFound = true;
+      userID = user;
+      break;
+    }
+  }
+
+  if (userFound) {
+    req.session.user = userID;
+    res.redirect('/login');
+
+  } else {
+
+    res.redirect('/register');
+  }
+});
+
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: req.user,
+  };
+  res.render("login", templateVars);
+});
+
+
 //user form
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     res.status(400).send("Email and password cannot be empty");
     return;
@@ -76,7 +118,7 @@ app.post("/register", (req, res) => {
 //user Registration
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_Id]
+    user: users[req.cookies.user_id],
   };
   res.render('register', templateVars);
 });
@@ -102,10 +144,8 @@ app.post("/urls/:id/delete", (req, res) => {
 // creation of new URL
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_id]
+    user: users[req.cookies.user_id],
   };
-  console.log(Object.entries(templateVars));
-  console.log(users[req.cookies.user_id.email]);
   res.render("urls_new", templateVars);
 });
     
@@ -113,10 +153,9 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
-    user: users[req.cookies.user_id], //does not return a value
+    user: users[req.cookies.user_id],
     longURL: urlDatabase
   };
-  console.log(templateVars);
   res.render("urls_show", templateVars);
 });
 
@@ -128,30 +167,6 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/" + shortURL);
 });
 
-
-//log in
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  let userFound = false;
-  let userID;
-
-  for(const user in users) {
-    if (users[user].email === email && users[user].password === password) {
-      userFound = true;
-      userID = user;
-      break;
-    }
-  }
-
-  if (userFound) {
-    req.session.user = userID;
-    res.redirect('/urls');
-
-  } else {
-
-res.redirect('/register');
-  }
-});
 
 //cookies for Username
 app.get("/urls", (req, res) => {
