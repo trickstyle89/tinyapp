@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
 
-    <title>URL - TinyApp Example</title>
+    <title>New User Registration</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -18,22 +18,16 @@
 <body>
   <%- include('partials/_header') %>
 
-    <div class="card text-center">
-      <div class="card-header"></div>
-      <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%= longURL[id].longURL %></h5>
-        <p class="card-text">
-          Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
-        </p>
-        <div class="form-container">
-        <h3>Edit your Long URL</h3>
-        <form method="post" action="/urls/<%= id %>">
-            <label for="editURL">Edit URL:</label>
-            <input type="text" id="editURL" name="editURL" value="<%= longURL[id].longURL %>">
-            <button type="submit">Save Changes</button>
-          </form>
-      </form>
-      </div>
+  <h1>Registration Form</h1>
+  <form method="POST" action="/register">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" placeholder="Your E-mail" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" placeholder="password"required>
+
+    <button type="submit">Register</button>
+  </form>
       <div class="card-footer text-muted"></div>
     </div>
     <!-- Bootstrap JS -->
