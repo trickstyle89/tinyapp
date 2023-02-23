@@ -28,16 +28,21 @@ const getUserByEmail = function(email) {
 };
 
 //middleware for login check
-const requireLogin = (req, res, next) => {
-  if (!req.user) {
+/*const requireLogin = (req, res, next) => {
+  if (!req.session.user) {
     return res.redirect("/login");
   }
-  // Set user property on req object
-  req.user = users[req.session.user];
-  console.log(`Req.user${req.user}`);
+  
+  const user = getUserByEmail(req.session.user); //boolean true or false for existing user
+
+  if (!user) {
+    return res.redirect("/login");
+  }
+
+  req.user = users[req.session.user]; //possible naming issue
   next();
 };
-
+*/
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -48,6 +53,11 @@ const users = {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk",
+  },
+  user3RandomID: {
+    id: "88999",
+    email: "chewsstory@gmail.com",
+    password: "111",
   },
 };
 
@@ -63,41 +73,45 @@ app.use(express.urlencoded({ extended: true }));
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   let userFound = false;
-  let userID;
 
   for (const user in users) {
     if (users[user].email === email && users[user].password === password) {
       userFound = true;
-      userID = user;
-      break;
+      //userID = user;
+      break; // Exit the loop if user is found
     }
   }
-
+  
   if (userFound) {
-    req.session.user = userID;
-    res.redirect('/login');
-
+    const templateVars = {
+      user: users[req.cookies.user_id],
+    };
+    res.redirect('/urls');
   } else {
-
     res.redirect('/register');
   }
 });
 
-app.get("/login", (req, res) => {
-  const templateVars = {
-    user: req.user,
-  };
-  res.render("login", templateVars);
+
+/*
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  const user = getUserByEmail(email);
+
+  if (user && user.password === password) {
+    req.session.user = user.email;
+    res.cookie('user_id', user.id);
+    res.redirect('/urls');
+  } else {
+    return res.redirect("/register");
+  }
 });
+*/
 
-
-//user form
+//new user registration
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).send("Email and password cannot be empty");
-    return;
-  }
+  
 
   if (getUserByEmail(email)) {
     res.status(400).send("Email is already registered");
@@ -132,6 +146,15 @@ app.post("/urls/:id", (req, res) => {
   urlDatabase[id] = urlObj;
 
   res.redirect("/urls");
+});
+
+// render login page
+app.get("/login", (req, res) => {
+  const templateVars = {  //seems off
+    user: req.user,
+    password: req.user,
+  };
+  res.render("login", templateVars);
 });
 
 // delete entries
