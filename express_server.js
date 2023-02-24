@@ -1,7 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-\const PORT = 8081; // default port 8080
+const bcrypt = require('bcryptjs');
+const methodOverride = require('method-override');
+const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
 
