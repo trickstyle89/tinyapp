@@ -83,15 +83,33 @@ app.get("/register", (req, res) => {
 });
 
 
-// edit entries
-app.post("/urls/:id", (req, res) => {
-  
-  const id = req.params.id;
-  const urlObj = { ...urlDatabase[id] };
-  urlObj.longURL = req.body.editURL;
-  urlDatabase[id] = urlObj;
+// edit short URL entries
+app.get("/urls/:ids", (req, res) => {
+  // Display url
+  const {user_id} = req.session;
+  const templateVars = {
+    username : user_id
+  };
+  const inId = req.params.ids;
 
-  res.redirect("/urls");
+  // Not logged in
+  if (user_id === undefined) {
+    templateVars.cond = 'Not logged in';
+  } else if (!Object.keys(urlDatabase).includes(inId)) {
+  // Doesn't exist
+    templateVars.cond = 'URL does not exist';
+  } else if (urlDatabase[inId].userID !== user_id) {
+  // Doesn't own
+    templateVars.cond = "Can't edit unowned urls";
+  } else {
+  // Reg
+    templateVars.username = users[user_id].email;
+    templateVars.shortURL = req.params.ids;
+    templateVars.longURL = urlDatabase[req.params.ids].longURL;
+    templateVars.cond = false;
+  }
+  res.render('urls_show', templateVars);
+  return;
 });
 
 // render login page
