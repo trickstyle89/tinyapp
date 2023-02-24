@@ -1,13 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
 const app = express();
-app.use(cookieParser());
-const PORT = 8081; // default port 8080
+\const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
 
-// checks to see if user has account.
+const {generateRandomString, userfinder, urlsForUser, redirectLoggedInUsersToUrls} = require('./helpers');
 
 
 const users = {
@@ -41,17 +39,10 @@ const urlDatabase = {
   },
 };
 
+app.use(methodOverride('_method'));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.urlencoded({ extended: true }));
 
-/*
-
-const redirectLoggedInUsersToUrls = (req, res, next) => {
-  if (req.session.user && (req.url === '/login' || req.url === '/register')) {
-    return res.redirect('/urls');
-  }
-  next();
-};
-*/
 
 const requireLogin = (req, res, next) => {
   const user = users[req.cookies.user_id];
