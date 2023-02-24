@@ -131,14 +131,17 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
-// Individidual short address pages
-app.get("/urls/:ids", (req, res) => {
-  // Display url
-  const {user_id} = req.session;
-  const templateVars = {
-    username : user_id
-  };
-  const inId = req.params.ids;
+app.post("/urls/:shortURL/delete", (req,res) => {
+  const shortURL = req.params.shortURL;
+  let idMatchedVar = 0;
+  idMatchedVar = idMatched(shortURL, users, urlDatabase);
+  if (!idMatchedVar) {
+    res.send("Sorry, you dont have permission to delete other user's url");
+    return;
+  }
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
+});
 
   // Not logged in
   if (user_id === undefined) {
