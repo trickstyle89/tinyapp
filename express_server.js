@@ -82,6 +82,16 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.post("/urls", (req, res) => {
+  let shortURL = generateRandomId();
+  const userId = req.session.user_id;
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL,
+    userID: userId,
+  };
+  res.redirect(`/urls/${shortURL}`);
+});
+
 // Helpers
 const {generateRandomString, userfinder, urlsForUser} = require('./helpers');
 
