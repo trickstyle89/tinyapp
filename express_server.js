@@ -153,6 +153,14 @@ app.get("/urls/:shortURL/delete", (req,res) => {
   }
 });
 
+//Update(CRUD) the long URL
+app.post("/urls/:id", (req,res) => {
+  const id = req.params.id;
+  urlDatabase[id].longURL = req.body.quoteContent;
+  res.redirect("/urls");
+});
+
+
 
 // delete a short url entry
 app.delete("/urls/:shortURL", (req, res) => {
