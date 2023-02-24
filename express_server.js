@@ -27,8 +27,6 @@ const getUserByEmail = function(email) {
   return null;
 };
 
-//middleware for login check
-
 
 const users = {
   userRandomID: {
@@ -106,11 +104,9 @@ app.post('/login', (req, res) => {
     const templateVars = {
       user: users[req.cookies.user_id],
     };
-    console.log("line 89", templateVars);
     res.redirect('/urls');
-  } else {
+  } 
     res.redirect('/register');
-  }
 });
 
 
