@@ -82,14 +82,17 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.post("/urls", (req, res) => {
-  let shortURL = generateRandomId();
+app.get("/urls/new", (req, res) => {
   const userId = req.session.user_id;
-  urlDatabase[shortURL] = {
-    longURL: req.body.longURL,
-    userID: userId,
+  const loggedInUser = users[userId];
+  const templateVars = {
+    user: loggedInUser,
   };
-  res.redirect(`/urls/${shortURL}`);
+  if (loggedInUser) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect('/login');
+  }
 });
 
 // Helpers
