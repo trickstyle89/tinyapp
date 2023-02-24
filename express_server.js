@@ -221,13 +221,20 @@ app.post("/urls", requireLogin, (req, res) => {
 
 
 //cookies for Username
-app.get("/urls", (req, res) => {
+app.get("/urls", requireLogin, (req, res) => {
+  const userUrls = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === req.user.id) {
+      userUrls[shortURL] = urlDatabase[shortURL];
+    }
+  }
   const templateVars = {
     user: users[req.cookies.user_id],
-    urls: urlDatabase,
+    urls: userUrls,
   };
   res.render("urls_index", templateVars);
 });
+
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
