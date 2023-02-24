@@ -45,13 +45,41 @@ app.post("/register", (req, res) => {
 });
 
 //user Registration
-app.get("/register", (req, res) => {
-  const templateVars = {
-    user: req.user,
-    password: req.user,
+// register post
+app.post('/register', (req, res) => {
+  const loginstatus = {
+    cond:'Existing User',
+    username: undefined
   };
-  res.render('register', templateVars);
+  let {username, pass} = req.body;
+
+  const existing = userfinder(username, pass, users);
+  let curruid = generateRandomString();
+
+  if (existing) {
+    res.render('urls_register',loginstatus);
+    return;
+  }
+  if (username.length < 1) {
+    loginstatus.cond = 'Email is empty';
+    res.status(400).render('urls_register',loginstatus);
+    return;
+  }
+  if (pass.length < 1) {
+    loginstatus.cond = 'Password is empty';
+    res.status(400).render('urls_register',loginstatus);
+    return;
+  }
+  users[curruid] = {
+    id: curruid,
+    pass : bcrypt.hashSync(pass, 10),
+    email: username,
+  };
+  req.session.user_id = curruid;
+  res.redirect('/urls');
+  return;
 });
+
 
 
 // Logged in check
