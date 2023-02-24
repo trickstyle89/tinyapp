@@ -95,6 +95,27 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+app.get("/urls/:shortURL", (req, res) => {
+  const userId = req.session.user_id;
+  const loggedInUser = users[userId];
+
+  if (!urlDatabase[req.params.shortURL]) {
+    res.send("Id does not exist in user database!!");
+    return;
+  }
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  const templateVars = {
+    user: loggedInUser,
+    shortURL: req.params.shortURL,
+    longURL: longURL,
+  };
+  if (urlDatabase[req.params.shortURL].userID !== users[userId].id) {
+    res.send("Sorry, you dont have permission to edit other user's url");
+    return;
+  }
+  res.render("urls_show", templateVars);
+});
+
 // Helpers
 const {generateRandomString, userfinder, urlsForUser} = require('./helpers');
 
