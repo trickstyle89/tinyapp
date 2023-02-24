@@ -28,20 +28,7 @@ const getUserByEmail = function(email) {
 };
 
 //middleware for login check
-const requireLogin = (req, res, next) => {
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
-  
-  const user = getUserByEmail(req.session.user); //boolean true or false for existing user
 
-  if (!user) {
-    return res.redirect("/login");
-  }
-
-  req.user = users[req.session.user]; //possible naming issue with req.user
-  next();
-};
 
 const users = {
   userRandomID: {
@@ -61,13 +48,44 @@ const users = {
   },
 };
 
+/*  OLD
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca" },
   "9sm5xK": { longURL: "http://www.google.com" }
 };
+*/
 
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
+};
 
 app.use(express.urlencoded({ extended: true }));
+
+/*
+
+const redirectLoggedInUsersToUrls = (req, res, next) => {
+  if (req.session.user && (req.url === '/login' || req.url === '/register')) {
+    return res.redirect('/urls');
+  }
+  next();
+};
+*/
+
+const requireLogin = (req, res, next) => {
+  const user = users[req.cookies.user_id];
+  if (!user) {
+    return res.redirect('/login');
+  }
+  req.user = user;
+  next();
+};
 
 
 //log in
@@ -120,7 +138,8 @@ app.post("/register", (req, res) => {
 //user Registration
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_id],
+    user: req.user,
+    password: req.user,
   };
   res.render('register', templateVars);
 });
@@ -128,6 +147,7 @@ app.get("/register", (req, res) => {
 
 // edit entries
 app.post("/urls/:id", (req, res) => {
+  
   const id = req.params.id;
   const urlObj = { ...urlDatabase[id] };
   urlObj.longURL = req.body.editURL;
@@ -138,7 +158,7 @@ app.post("/urls/:id", (req, res) => {
 
 // render login page
 app.get("/login", (req, res) => {
-  const templateVars = {  
+  const templateVars = {
     user: req.user,
     password: req.user,
   };
@@ -153,7 +173,10 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 // creation of new URL
-app.get("/urls/new", (req, res) => {
+app.get("/urls/new", requireLogin, (req, res) => {
+  if (!req.cookies.user_id) {
+    return res.redirect("/login");
+  }
   const templateVars = {
     user: users[req.cookies.user_id],
   };
@@ -162,6 +185,20 @@ app.get("/urls/new", (req, res) => {
     
 // new entry confirmation
 app.get("/urls/:id", (req, res) => {
+  app.get("/u/:id", requireLogin, (req, res) => {
+    const id = req.params.id;
+    const urlObj = urlDatabase[id];
+    if (!urlObj) {
+      // Render an error page if the id does not exist???
+      const templateVars = {
+        message: `URL with id ${id} does not exist.`,
+        user: req.user
+      };
+      return res.status(404).render("error", templateVars);
+    }
+    res.redirect(urlObj.longURL);
+  });
+  
   const templateVars = {
     id: req.params.id,
     user: users[req.cookies.user_id],
@@ -171,10 +208,14 @@ app.get("/urls/:id", (req, res) => {
 });
 
 // tinyApp URL creator
-app.post("/urls", (req, res) => {
+app.post("/urls", requireLogin, (req, res) => {
+  if (!req.body.longURL) {
+    return res.status(400).send("Error: longURL parameter is missing.");
+  }
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = { longURL };
+  const userID = req.user.id  // **** possible error in labelling.
+  urlDatabase[shortURL] = { longURL, userID };
   res.redirect("/urls/" + shortURL);
 });
 
@@ -190,7 +231,7 @@ app.get("/urls", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 
