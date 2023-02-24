@@ -167,7 +167,24 @@ app.get("/login", (req, res) => {
 
 // delete entries
 app.post("/urls/:id/delete", (req, res) => {
-  const id = req.body.id;
+  const id = req.params.id;
+  const urlObj = urlDatabase[id];
+  if (!urlObj) {
+    // Render an error page if the id does not exist
+    const templateVars = {
+      message: `URL with id ${id} does not exist.`,
+      user: req.user
+    };
+    return res.status(404).send("You are not authorized to delete this URL");
+  }
+  if (urlObj.id !== req.user) {
+    // Render an error page if the user does not own the URL
+    const templateVars = {
+      message: `You are not authorized to delete this URL.`,
+      user: req.user
+    };
+    return res.status(400).send("You are not authorized to delete this URL.");
+  }
   delete urlDatabase[id];
   res.redirect("/urls");
 });
@@ -183,28 +200,37 @@ app.get("/urls/new", requireLogin, (req, res) => {
   res.render("urls_new", templateVars);
 });
     
-// new entry confirmation
-app.get("/urls/:id", (req, res) => {
-  app.get("/u/:id", requireLogin, (req, res) => {
-    const id = req.params.id;
-    const urlObj = urlDatabase[id];
-    if (!urlObj) {
-      // Render an error page if the id does not exist???
-      const templateVars = {
-        message: `URL with id ${id} does not exist.`,
-        user: req.user
-      };
-      return res.status(404).render("error", templateVars);
-    }
-    res.redirect(urlObj.longURL);
-  });
-  
+// Route for displaying individual shortened URLs
+app.get("/urls/:id", requireLogin, (req, res) => {
+  const id = req.params.id;
+  const urlObj = urlDatabase[id];
+  if (!urlObj) {
+    const templateVars = {
+      message: `URL with id ${id} does not exist.`,
+      user: req.user
+    };
+    return res.status(400).send("You are not authorized to access this URL.");
+  }
   const templateVars = {
-    id: req.params.id,
-    user: users[req.cookies.user_id],
-    longURL: urlDatabase
+    id: id,
+    user: req.user,
+    longURL: urlObj.longURL
   };
   res.render("urls_show", templateVars);
+});
+
+// Route for redirecting to the long URL associated with a shortened URL
+app.get("/u/:id", (req, res) => {
+  const id = req.params.id;
+  const urlObj = urlDatabase[id];
+  if (!urlObj) {
+    const templateVars = {
+      message: `URL with id ${id} does not exist.`,
+      user: req.user
+    };
+    return res.status(400).send("error",);
+  }
+  res.redirect(urlObj.longURL);
 });
 
 // tinyApp URL creator
