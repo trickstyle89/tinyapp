@@ -8,15 +8,6 @@ const PORT = 8081; // default port 8080
 app.set("view engine", "ejs");
 
 // checks to see if user has account.
-const getUserByEmail = function(email) {
-  for (const userId in users) {
-    const user = users[userId];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
-};
 
 
 const users = {
