@@ -48,12 +48,7 @@ const users = {
   },
 };
 
-/*  OLD
-const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca" },
-  "9sm5xK": { longURL: "http://www.google.com" }
-};
-*/
+
 
 const urlDatabase = {
   b6UTxQ: {
@@ -91,7 +86,12 @@ const requireLogin = (req, res, next) => {
 //log in
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  let userFound = false;
+  let user = getUserByEmail(email);
+
+  if (!user) {
+    res.status(400).send("No user");
+    return;
+  }
 
   for (const userId in users) {
     if (users[userId].email === email && users[userId].password === password) {
@@ -184,28 +184,33 @@ app.get("/urls/new", requireLogin, (req, res) => {
 });
     
 // new entry confirmation
-app.get("/urls/:id", (req, res) => {
-  app.get("/u/:id", requireLogin, (req, res) => {
-    const id = req.params.id;
-    const urlObj = urlDatabase[id];
-    if (!urlObj) {
-      // Render an error page if the id does not exist???
-      const templateVars = {
-        message: `URL with id ${id} does not exist.`,
-        user: req.user
-      };
-      return res.status(404).render("error", templateVars);
-    }
-    res.redirect(urlObj.longURL);
-  });
-  
-  const templateVars = {
-    id: req.params.id,
-    user: users[req.cookies.user_id],
-    longURL: urlDatabase
-  };
-  res.render("urls_show", templateVars);
+app.post("/urls/:id", requireLogin, (req, res) => {
+  const id = req.params.id;
+  const urlObj = urlDatabase[id];
+  if (!urlObj || urlObj.userID !== req.user.id) {
+    const templateVars = {
+      message: `URL with id ${id} does not exist or you are not authorized to edit it.`,
+      user: req.user
+    };
+    return res.status(400).send("You are not authorized to edit this URL.");
+  }
+  urlDatabase[id].longURL = req.body.longURL;
+  res.redirect("/urls");
 });
+
+app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const urlObj = urlDatabase[shortURL];
+  if (!urlObj) {
+    const templateVars = {
+      message: `URL with id ${shortURL} does not exist.`,
+      user: req.user
+    };
+    return res.status(404).render("error", templateVars);
+  }
+  res.redirect(urlObj.longURL);
+});
+
 
 // tinyApp URL creator
 app.post("/urls", requireLogin, (req, res) => {
