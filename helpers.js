@@ -4,6 +4,7 @@ const uuid = require('uuid');
 // password correspond with a user in the user dataset,
 // or the string "only email" if only the email is correct
 // or false if user doesn't exist.
+
 const userfinder = (user, password, searchData) => {
   for (let elem in searchData) {
     let {email, pass} = searchData[elem];
@@ -37,4 +38,12 @@ const urlsForUser = (id, searchData) => {
   return ansObj;
 };
 
-module.exports = {userfinder, urlsForUser, generateRandomString};
+const redirectLoggedInUsersToUrls = (req, res, next) => {
+  if (req.session.user && (req.url === '/login' || req.url === '/register')) {
+    return res.redirect('/urls');
+  }
+  next();
+};
+
+
+module.exports = {userfinder, urlsForUser, generateRandomString, redirectLoggedInUsersToUrls};
