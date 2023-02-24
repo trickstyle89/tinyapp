@@ -182,6 +182,18 @@ app.post("/logout", (req,res) => {
   res.redirect("/urls");
 });
 
+//Implement User Registration and Login
+app.get('/login', (req, res) => {
+  const userId = req.session.user_id;
+  const loggedInUser = users[userId];
+  const templateVars = {
+    user: loggedInUser};
+  if (loggedInUser) {
+    res.redirect("/urls");
+  } else {
+    res.render('login', templateVars);
+  }
+});
 
 // delete a short url entry
 app.delete("/urls/:shortURL", (req, res) => {
