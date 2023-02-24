@@ -80,8 +80,8 @@ app.post('/login', (req, res) => {
       user: users[req.cookies.user_id],
     };
     res.redirect('/urls');
-  } 
-    res.redirect('/register');
+  }
+  res.redirect('/register');
 });
 
 
@@ -190,7 +190,7 @@ app.post("/urls", requireLogin, (req, res) => {
   }
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  const userID = req.user.id  // **** possible error in labelling.
+  const userID = req.user.id;  // **** possible error in labelling.
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect("/urls/" + shortURL);
 });
