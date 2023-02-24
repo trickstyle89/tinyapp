@@ -1,5 +1,6 @@
 const express = require("express");
-const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
+const cookieParser = require('cookie-parser'); // take out after bcrypt?
 const app = express();
 app.use(cookieParser());
 const PORT = 8081; // default port 8080
@@ -48,6 +49,22 @@ const users = {
   },
 };
 
+//encyption
+const hashThePassword = (password) => {
+  const salt = bcrypt.genSaltSync(10);
+  return bcrypt.hashSync(password, salt);
+};
+
+//encrypt the user in object. **only once
+const hashPasswords = (users) => {
+  for (const userId in users) {
+    const user = users[userId];
+    user.password = hashThePassword(user.password);
+  }
+};
+hashPasswords(users);
+
+console.log('line 67 hash', users);  // <------- console.log test
 /*  OLD
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca" },
@@ -68,13 +85,15 @@ const urlDatabase = {
 
 app.use(express.urlencoded({ extended: true }));
 
-/*
-
-const redirectLoggedInUsersToUrls = (req, res, next) => {
-  if (req.session.user && (req.url === '/login' || req.url === '/register')) {
-    return res.redirect('/urls');
+/* Helper function refactor in later starting at 252
+const urlsForUser = (id) => {
+  const userUrls = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userUrls[shortURL] = urlDatabase[shortURL];
+    }
   }
-  next();
+  return userUrls;
 };
 */
 
@@ -94,22 +113,21 @@ app.post('/login', (req, res) => {
   let userFound = false;
 
   for (const userId in users) {
-    if (users[userId].email === email && users[userId].password === password) {
+    const user = users[userId];
+    if (user.email === email && bcrypt.compareSync(password, user.password)) {
       userFound = true;
       res.cookie('user_id', userId);
-      // console.log("line 82", res.cookie);
       break; // Exit the loop if user is found
     }
   }
-  
   if (userFound) {
-    const templateVars = {
+   /*  const templateVars = {     *** unnessesary?
       user: users[req.cookies.user_id],
     };
-    console.log("line 89", templateVars);
+    */
     res.redirect('/urls');
   } else {
-    res.redirect('/register');
+    res.status(403).send('Invalid email or password');
   }
 });
 
@@ -125,11 +143,13 @@ app.post("/register", (req, res) => {
   }
 
   const userId = generateRandomString();
+  const hashedPassword = hashThePassword(password); // Hash the password via helper function
   const newUser = {
     id: userId,
     email,
-    password
+    password: hashedPassword
   };
+  console.log('line 152', newUser);  // <------- console.log test
   users[userId] = newUser;
   res.cookie('user_id', userId);
   res.redirect("/urls");
@@ -190,7 +210,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 // creation of new URL
-app.get("/urls/new", requireLogin, (req, res) => {
+app.get("/urls/new", requireLogin, (req, res) => {  
   if (!req.cookies.user_id) {
     return res.redirect("/login");
   }
@@ -234,13 +254,13 @@ app.get("/u/:id", (req, res) => {
 });
 
 // tinyApp URL creator
-app.post("/urls", requireLogin, (req, res) => {
+app.post("/urls", requireLogin, (req, res) => {  
   if (!req.body.longURL) {
     return res.status(400).send("Error: longURL parameter is missing.");
   }
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  const userID = req.user.id  // **** possible error in labelling.
+  const userID = req.user.id;
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect("/urls/" + shortURL);
 });
