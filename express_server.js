@@ -24,26 +24,19 @@ const requireLogin = (req, res, next) => {
 
 
 //new user registration
-app.post("/register", (req, res) => {
-  const { email, password } = req.body;
-  
-
-  if (getUserByEmail(email)) {
-    res.status(400).send("Email is already registered");
+// reg new user
+app.get('/register', (req, res) => {
+  let loginstatus = {
+    cond: undefined,
+    username: undefined,
+  };
+  if (req.session.user_id === undefined) {
+    res.render('urls_register', loginstatus);
     return;
   }
-
-  const userId = generateRandomString();
-  const newUser = {
-    id: userId,
-    email,
-    password
-  };
-  users[userId] = newUser;
-  res.cookie('user_id', userId);
-  res.redirect("/urls");
+  res.redirect('/urls');
+  return;
 });
-
 //user Registration
 // register post
 app.post('/register', (req, res) => {
