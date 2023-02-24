@@ -28,7 +28,7 @@ const getUserByEmail = function(email) {
 };
 
 //middleware for login check
-/*const requireLogin = (req, res, next) => {
+const requireLogin = (req, res, next) => {
   if (!req.session.user) {
     return res.redirect("/login");
   }
@@ -39,10 +39,10 @@ const getUserByEmail = function(email) {
     return res.redirect("/login");
   }
 
-  req.user = users[req.session.user]; //possible naming issue
+  req.user = users[req.session.user]; //possible naming issue with req.user
   next();
 };
-*/
+
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -69,15 +69,17 @@ const urlDatabase = {
 
 app.use(express.urlencoded({ extended: true }));
 
+
 //log in
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   let userFound = false;
 
-  for (const user in users) {
-    if (users[user].email === email && users[user].password === password) {
+  for (const userId in users) {
+    if (users[userId].email === email && users[userId].password === password) {
       userFound = true;
-      //userID = user;
+      res.cookie('user_id', userId);
+      // console.log("line 82", res.cookie);
       break; // Exit the loop if user is found
     }
   }
@@ -86,27 +88,13 @@ app.post('/login', (req, res) => {
     const templateVars = {
       user: users[req.cookies.user_id],
     };
+    console.log("line 89", templateVars);
     res.redirect('/urls');
   } else {
     res.redirect('/register');
   }
 });
 
-
-/*
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  const user = getUserByEmail(email);
-
-  if (user && user.password === password) {
-    req.session.user = user.email;
-    res.cookie('user_id', user.id);
-    res.redirect('/urls');
-  } else {
-    return res.redirect("/register");
-  }
-});
-*/
 
 //new user registration
 app.post("/register", (req, res) => {
@@ -150,7 +138,7 @@ app.post("/urls/:id", (req, res) => {
 
 // render login page
 app.get("/login", (req, res) => {
-  const templateVars = {  //seems off
+  const templateVars = {  
     user: req.user,
     password: req.user,
   };
