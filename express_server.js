@@ -179,16 +179,28 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 // tinyApp URL creator
-app.post("/urls", requireLogin, (req, res) => {
-  if (!req.body.longURL) {
-    return res.status(400).send("Error: longURL parameter is missing.");
+app.post("/urls", (req, res) => {
+  const currShort = generateRandomString();
+  const {user_id} = req.session;
+  let currLong = req.body.longURL;
+  // if not logged in
+  if (!user_id) {
+    let templateVars = {
+      username : undefined,
+      cond :'Not logged in'
+    };
+    res.render('urls_show', templateVars);
+    return;
   }
-  const longURL = req.body.longURL;
-  const shortURL = generateRandomString();
-  const userID = req.user.id  // **** possible error in labelling.
-  urlDatabase[shortURL] = { longURL, userID };
-  res.redirect("/urls/" + shortURL);
+
+  urlDatabase[currShort] = {
+    longURL: currLong,
+    userID: user_id,
+  };
+  res.redirect(`/urls/${currShort}`);
+  return;
 });
+
 
 
 // list of URLs
