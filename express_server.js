@@ -5,46 +5,13 @@ const bcrypt = require('bcryptjs');
 const methodOverride = require('method-override');
 const PORT = 8081; // default port 8080
 
-app.set("view engine", "ejs");
-
-const {generateRandomString, userfinder, urlsForUser, redirectLoggedInUsersToUrls} = require('./helpers');
-
-
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
-  user3RandomID: {
-    id: "88999",
-    email: "chewsstory@gmail.com",
-    password: "111",
-  },
-};
-
-
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW",
-  },
-};
-
 app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.urlencoded({ extended: true }));
 
+app.set("view engine", "ejs");
+
+const {generateRandomString, userfinder, urlsForUser, redirectLoggedInUsersToUrls} = require('./helpers');
 
 const requireLogin = (req, res, next) => {
   const user = users[req.cookies.user_id];
@@ -80,8 +47,8 @@ app.post('/login', (req, res) => {
       user: users[req.cookies.user_id],
     };
     res.redirect('/urls');
-  }
-  res.redirect('/register');
+  } 
+    res.redirect('/register');
 });
 
 
@@ -190,7 +157,7 @@ app.post("/urls", requireLogin, (req, res) => {
   }
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
-  const userID = req.user.id;  // **** possible error in labelling.
+  const userID = req.user.id  // **** possible error in labelling.
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect("/urls/" + shortURL);
 });
@@ -215,6 +182,10 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// if 404 err
+if (app.status === 404) {
+  return '404 error';
+}
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
