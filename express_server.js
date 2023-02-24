@@ -59,8 +59,28 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(methodOverride('_method'));
-app.use(bodyParser.urlencoded({extended: true}));
+app.get("/", (req, res) => {
+  const userId = req.session.user_id;
+  const loggedInUser = users[userId];
+  if (loggedInUser) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
+});;
+
+app.get("/urls", (req, res) => {
+  //verifies the cookie to remain set on multiple pages
+  //and to display the user name in every page if logged in
+  const userId = req.session.user_id;
+  const loggedInUser = users[userId];
+  const shortUrlFound = urlsForUser(userId, urlDatabase);
+  const templateVars = {
+    user: loggedInUser,
+    filteredUrls: shortUrlFound,
+  };
+  res.render("urls_index", templateVars);
+});
 
 // Helpers
 const {generateRandomString, userfinder, urlsForUser} = require('./helpers');
