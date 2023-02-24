@@ -207,28 +207,24 @@ app.get('/register',(req,res) => {
   }
   
 });
-// delete a short url entry
-app.delete("/urls/:shortURL", (req, res) => {
-  const {user_id} = req.session;
-  const currShort = req.params.shortURL;
-  // not logged in
-  const templateVars = {
-    username: undefined,
-    cond: 'Must Own Url to delete'
-  };
-  if (!user_id) {
-    templateVars.cond = 'Must be logged in to delete urls';
+
+//Registering new users and checking for Errors
+app.post('/register',(req, res) => {
+  const { email, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  if ((email === "") || (password === "")) {
+    res.status(400).send("Email or Password is not entered");
   }
-  console.log(urlDatabase[currShort]);
-  console.log([currShort]);
-  // Logged in own
-  if (urlDatabase[currShort].userID === user_id) {
-    delete urlDatabase[currShort];
-    res.redirect("/urls");
-    return;
+
+  const userFound = getUserByEmail(email, users);
+  if (userFound) {
+    res.status(400).send("User already exists!");
   }
-  res.render('urls_index', templateVars);
-  return;
+
+  const userID = createUser(email, hashedPassword, users);
+  req.session.user_id = userID;
+  res.redirect("/urls");
 });
 
 // Update an individual page for an id
