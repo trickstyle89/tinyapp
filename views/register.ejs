@@ -13,18 +13,18 @@
     />
     
 
+    <%- include('partials/_header') %>
 
   </head>
 <body>
-  <%- include('partials/_header') %>
 
   <h1>Registration Form</h1>
   <form method="POST" action="/register">
-    <label for="username">Email:</label>
-    <input type="text" id="username" name="username" placeholder="Your E-mail" required>
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email" placeholder="Your E-mail" required>
 
-    <label for="pass">Password:</label>
-    <input type="password" id="password" name="pass" placeholder="your password"required>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" placeholder="your password"required>
 
     <button type="submit">Register</button>
   </form>
