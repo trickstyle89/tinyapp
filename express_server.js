@@ -23,35 +23,6 @@ const requireLogin = (req, res, next) => {
 };
 
 
-//log in
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  let user = getUserByEmail(email);
-
-  if (!user) {
-    res.status(400).send("No user");
-    return;
-  }
-
-  for (const userId in users) {
-    if (users[userId].email === email && users[userId].password === password) {
-      userFound = true;
-      res.cookie('user_id', userId);
-      // console.log("line 82", res.cookie);
-      break; // Exit the loop if user is found
-    }
-  }
-  
-  if (userFound) {
-    const templateVars = {
-      user: users[req.cookies.user_id],
-    };
-    res.redirect('/urls');
-  } 
-    res.redirect('/register');
-});
-
-
 //new user registration
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
@@ -220,14 +191,26 @@ app.post("/urls", requireLogin, (req, res) => {
 });
 
 
-//cookies for Username
+// list of URLs
 app.get("/urls", (req, res) => {
+  // not logged in
+  const user_id = req.session.user_id;
+  const usersUrls = urlsForUser(user_id, urlDatabase);
+
   const templateVars = {
-    user: users[req.cookies.user_id],
-    urls: urlDatabase,
+    username: undefined,
+    urls: usersUrls,
+    cond: 'Must be logged in to see urls'
   };
-  res.render("urls_index", templateVars);
+  if (user_id) {
+    templateVars.username = users[user_id].email;
+    templateVars.cond = undefined;
+  }
+  // Display urls
+  res.render('urls_index', templateVars);
+  return;
 });
+
 
 
 // delete cookie
