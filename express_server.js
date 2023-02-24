@@ -1,22 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-
 const cookieParser = require('cookie-parser');
 const app = express();
 app.use(cookieParser());
 const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
-
-const generateRandomString = function() {
-  const length = 6;
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-};
 
 // checks to see if user has account.
 const getUserByEmail = function(email) {
