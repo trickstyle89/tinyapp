@@ -118,7 +118,11 @@ app.get("/urls/new", (req, res) => {
     res.status(403).redirect('/login');
     return;
   }
-
+  const templateVars = {};
+  templateVars.username = users[user_id].email || undefined;
+  res.render("urls_new", templateVars);
+  return;
+});
     
 // new entry confirmation
 app.post("/urls/:id", requireLogin, (req, res) => {
