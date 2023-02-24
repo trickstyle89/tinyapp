@@ -1,20 +1,44 @@
-const express = require("express");
-const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
+const express = require("express");
+const { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId } = require('./helpers');
 const bcrypt = require('bcryptjs');
-const methodOverride = require('method-override');
-const {users, urlDatabase} = require('./constants');
-
 const app = express();
-const PORT = 8081;
+const bodyParser = require("body-parser");
+const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
-
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
-  keys: ['key1', 'key2'],
+  keys: ['key', 'lime', 'pie'],
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
+
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
+  },
+  i3DoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ42lW"
+  }
+};
+
+const password = "red";
+const hashedPassword = bcrypt.hashSync(password, 10);
+
+const users = {
+  "aJ48lW": {
+    id: "aJ48lW",
+    email: "user@example.com",
+    password: hashedPassword,
+  }
+};
 
 // Logged in check
 // if cookie doesn't exist go back to login page.
