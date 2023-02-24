@@ -172,9 +172,13 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect("/login");
+
+// delete cookie
+app.delete('/logout', (req, res) => {
+  // if logged in
+  req.session = null;
+  res.redirect('/urls');
+  return;
 });
 
 
