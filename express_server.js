@@ -160,6 +160,21 @@ app.post("/urls/:id", (req,res) => {
   res.redirect("/urls");
 });
 
+//Implementing Cookies
+app.post("/login", (req,res) => {
+  const { email, password } = req.body;
+  const userFoundByEmail = getUserByEmail(email, users);
+  if (!userFoundByEmail) {
+    res.status(403).send("User cannot be found");
+  } else {
+    if (bcrypt.compareSync(password, userFoundByEmail.password)) {
+      req.session.user_id = userFoundByEmail.id;
+      res.redirect("/urls");
+    } else {
+      res.status(403).send("User's email is found but the password does not match");
+    }
+  }
+});
 
 
 // delete a short url entry
