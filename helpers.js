@@ -1,49 +1,55 @@
-const bcrypt = require('bcryptjs');
-const uuid = require('uuid');
-// function userfinder returns the user object if the given email and
-// password correspond with a user in the user dataset,
-// or the string "only email" if only the email is correct
-// or false if user doesn't exist.
-
-const userfinder = (user, password, searchData) => {
-  for (let elem in searchData) {
-    let {email, pass} = searchData[elem];
-    // if both user and pass
-    if (email === user) {
-      // return true;
-      if (bcrypt.compareSync(password, pass)) {
-        return searchData[elem];
-      }
-      return 'onlyemail';
+//This function gives filtered lists of URLs for a specific user
+const urlsForUser = function(id, urlData) {
+  const filteredUrls = {};
+  const keys  = Object.keys(urlData);
+  for (const key of keys) {
+    
+    if (urlData[key]['userID'] === id) {
+      filteredUrls[key] = urlData[key];
     }
   }
-  return false;
+  return filteredUrls;
 };
 
-// function generateRandomString returns
-// a random length 6 string.
-const generateRandomString = () => uuid.v4().substr(0,6);
+//This function create and stores user's credentials for a new user
+const createUser = function(email, hashedPassword, users) {
+  const userID = generateRandomId();
+  
+  users[userID] = {
+    id: userID,
+    email,
+    password: hashedPassword,
+  };
+  return userID;
+};
 
-
-// function urlsForUser returns object containing url object
-// where userID === id or an empty object if no urls belong
-// to the user
-const urlsForUser = (id, searchData) => {
-  const ansObj = {};
-  for (let elem in searchData) {
-    if (searchData[elem].userID === id) {
-      ansObj[elem] = searchData[elem];
+//This function fetches user by comparing email id from database and provided in browser
+const getUserByEmail = function(email, users) {
+  for (let userKey in users) {
+    const user = users[userKey];
+    if (user.email === email) {
+      return user;
     }
   }
-  return ansObj;
+  return undefined;
 };
 
-const redirectLoggedInUsersToUrls = (req, res, next) => {
-  if (req.session.user && (req.url === '/login' || req.url === '/register')) {
-    return res.redirect('/urls');
+//This function enables editing/deleting capabilities only if generated ID belongs to a specific user
+const idMatched = function(shortURL, users, urlDatabase) {
+  const ID = Object.keys(users);
+  let idMatchedVar = 0;
+  for (const id of ID) {
+    if (urlDatabase[shortURL].userID === id) {
+      idMatchedVar = 1;
+    }
   }
-  next();
+  return idMatchedVar;
+};
+
+//This function generate ID of 6 characters randomly
+const generateRandomId = function() {
+  return Math.random().toString(36).substring(2,8);
 };
 
 
-module.exports = {userfinder, urlsForUser, generateRandomString, redirectLoggedInUsersToUrls};
+module.exports = { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId };
