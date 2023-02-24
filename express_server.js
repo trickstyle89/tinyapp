@@ -176,6 +176,12 @@ app.post("/login", (req,res) => {
   }
 });
 
+//This request helps user to log out if logged in
+app.post("/logout", (req,res) => {
+  req.session = null;
+  res.redirect("/urls");
+});
+
 
 // delete a short url entry
 app.delete("/urls/:shortURL", (req, res) => {
