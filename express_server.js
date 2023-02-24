@@ -143,25 +143,16 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   res.redirect("/urls");
 });
 
-  // Not logged in
-  if (user_id === undefined) {
-    templateVars.cond = 'Not logged in';
-  } else if (!Object.keys(urlDatabase).includes(inId)) {
-  // Doesn't exist
-    templateVars.cond = 'URL does not exist';
-  } else if (urlDatabase[inId].userID !== user_id) {
-  // Doesn't own
-    templateVars.cond = "Can't edit unowned urls";
-  } else {
-  // Reg
-    templateVars.username = users[user_id].email;
-    templateVars.shortURL = req.params.ids;
-    templateVars.longURL = urlDatabase[req.params.ids].longURL;
-    templateVars.cond = false;
+app.get("/urls/:shortURL/delete", (req,res) => {
+  const shortURL = req.params.shortURL;
+  let idMatchedVar = 0;
+  idMatchedVar = idMatched(shortURL, users, urlDatabase);
+  if (!idMatchedVar) {
+    res.send("Sorry, you dont have permission to delete other user's url");
+    return;
   }
-  res.render('urls_show', templateVars);
-  return;
 });
+
 
 // delete a short url entry
 app.delete("/urls/:shortURL", (req, res) => {
