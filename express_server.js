@@ -111,15 +111,14 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 // creation of new URL
-app.get("/urls/new", requireLogin, (req, res) => {
-  if (!req.cookies.user_id) {
-    return res.redirect("/login");
+app.get("/urls/new", (req, res) => {
+  // if not logged in
+  const {user_id} = req.session;
+  if (!user_id) {
+    res.status(403).redirect('/login');
+    return;
   }
-  const templateVars = {
-    user: users[req.cookies.user_id],
-  };
-  res.render("urls_new", templateVars);
-});
+
     
 // new entry confirmation
 app.post("/urls/:id", requireLogin, (req, res) => {
