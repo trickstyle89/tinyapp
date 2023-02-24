@@ -116,21 +116,19 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-
-// Requests
-// Making a new short url
-app.get("/urls/new", (req, res) => {
-  // if not logged in
-  const {user_id} = req.session;
-  if (!user_id) {
-    res.status(403).redirect('/login');
-    return;
+app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const userId = req.session.user_id;
+  const loggedInUser = users[userId];
+  const templateVars = {
+    user: loggedInUser,
+  };
+  if (urlDatabase[shortURL]) {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+  } else {
+    res.render('error.ejs', templateVars);
   }
-
-  const templateVars = {};
-  templateVars.username = users[user_id].email || undefined;
-  res.render("urls_new", templateVars);
-  return;
 });
 
 // Individidual short address pages
