@@ -83,6 +83,25 @@ app.get("/register", (req, res) => {
 });
 
 
+// Logged in check
+// if cookie doesn't exist go back to login page.
+app.use((req, res, next) => {
+  const {user_id} = req.session;
+  const path = req.path;
+  if (
+    user_id === undefined &&
+    path !== '/login' &&
+    path !== '/register' &&
+    path !== '/urls' &&
+    path.slice(0,4) !== '/url' &&
+    path.slice(0,2) !== '/u'
+  ) {
+    res.status(403).redirect('/login');
+    return;
+  }
+  next();
+});
+
 // edit short URL entries
 app.get("/urls/:ids", (req, res) => {
   // Display url
