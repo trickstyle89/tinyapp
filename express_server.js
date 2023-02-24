@@ -103,11 +103,28 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
-// delete entries
-app.post("/urls/:id/delete", (req, res) => {
-  const id = req.body.id;
-  delete urlDatabase[id];
-  res.redirect("/urls");
+// delete URL entries
+app.delete("/urls/:shortURL", (req, res) => {
+  const {user_id} = req.session;
+  const currShort = req.params.shortURL;
+  // not logged in
+  const templateVars = {
+    username: undefined,
+    cond: 'Must Own Url to delete'
+  };
+  if (!user_id) {
+    templateVars.cond = 'Must be logged in to delete urls';
+  }
+  console.log(urlDatabase[currShort]);
+  console.log([currShort]);
+  // Logged in own
+  if (urlDatabase[currShort].userID === user_id) {
+    delete urlDatabase[currShort];
+    res.redirect("/urls");
+    return;
+  }
+  res.render('urls_index', templateVars);
+  return;
 });
 
 // creation of new URL
