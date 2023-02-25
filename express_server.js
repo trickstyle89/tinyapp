@@ -29,11 +29,6 @@ const urlDatabase = {
 };
 
 const users = {
-  "aJ48lW": {
-    id: "aJ48lW",
-    email: "chewsstory@gmail.comm",
-    password: '111',
-  }
 };
 
 hashUserObjPasswords(users);
@@ -216,7 +211,7 @@ app.post('/register',(req, res) => {
   if (userFound) {
     res.status(400).send("User already exists!");
   }
-e
+
   const userID = createUser(email, hashedPassword, users);
   req.session.user_id = userID;
   console.log(req.session.user_id);
