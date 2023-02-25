@@ -3,7 +3,7 @@ const express = require("express");
 const { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId } = require('./helpers');
 const bcrypt = require('bcryptjs');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
@@ -28,13 +28,13 @@ const urlDatabase = {
   }
 };
 
-const password = "purple";
+const password = "111";
 const hashedPassword = bcrypt.hashSync(password, 10);
 
 const users = {
   "aJ48lW": {
     id: "aJ48lW",
-    email: "user@example.com",
+    email: "chewsstory@gmail.comm",
     password: hashedPassword,
   }
 };
