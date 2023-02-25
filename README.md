@@ -6,8 +6,8 @@ test. Another important skill was how to debug code and this goes back to increm
 
 ## Final Product
 
-!["screenshot of URL index"](tinyapp/docs/tinyAppURLindex.png)
-!["screenshot of New URL form"](tinyapp/docs/tinyAppNewURL.png)
+!["screenshot of URL index"](https://github.com/trickstyle89/tinyapp/blob/main/docs/tinyAppURLindex.png)
+!["screenshot of New URL form"](https://github.com/trickstyle89/tinyapp/blob/main/docs/tinyAppNewURL.png)
 
 ## Dependencies
 
