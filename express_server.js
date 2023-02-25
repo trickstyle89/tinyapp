@@ -128,18 +128,6 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   res.redirect("/urls");
 });
 
-
-//delete urls render
-app.get("/urls/:shortURL/delete", (req,res) => {
-  const shortURL = req.params.shortURL;
-  let idMatchedVar = 0;
-  idMatchedVar = idMatched(shortURL, users, urlDatabase);
-  if (!idMatchedVar) {
-    res.send("Sorry, you dont have permission to delete other user's url");
-    return;
-  }
-});
-
 //Update the long URL
 app.post("/urls/:id", (req,res) => {
   const id = req.params.id;
