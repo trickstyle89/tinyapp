@@ -154,7 +154,7 @@ app.post("/urls/:id", (req,res) => {
 //Implementing Cookies
 app.post("/login", (req,res) => {
   const { email, password } = req.body;
-  const userFoundByEmail = getUserByEmail(email, users);
+  const userFoundByEmail = getUserByEmail(email, users);  //can be fixed, maybe have
   console.log(userFoundByEmail);
   if (!userFoundByEmail) {
     res.status(403).send("User cannot be found");
