@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+
 //This function gives filtered lists of URLs for a specific user
 const urlsForUser = function(id, urlData) {
   const filteredUrls = {};

@@ -27,19 +27,6 @@ const urlDatabase = {
     userID: "aJ42lW"
   }
 };
-//encyption
-const hashThePassword = (password) => {
-  const salt = bcrypt.genSaltSync(10);
-  return bcrypt.hashSync(password, salt);
-};
-
-//encrypt the user in object. **only once
-const hashUserObjPasswords = (users) => {
-  for (const userId in users) {
-    const user = users[userId];
-    user.password = hashThePassword(user.password);
-  }
-};
 
 const users = {
   "aJ48lW": {
@@ -168,6 +155,7 @@ app.post("/urls/:id", (req,res) => {
 app.post("/login", (req,res) => {
   const { email, password } = req.body;
   const userFoundByEmail = getUserByEmail(email, users);
+  console.log(userFoundByEmail);
   if (!userFoundByEmail) {
     res.status(403).send("User cannot be found");
   } else {
@@ -218,7 +206,7 @@ app.get('/register',(req,res) => {
 //Registering new users and checking for Errors
 app.post('/register',(req, res) => {
   const { email, password } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const hashedPassword = hashThePassword(password);
 
   if ((email === "") || (password === "")) {
     res.status(400).send("Email or Password is not entered");
@@ -231,6 +219,7 @@ app.post('/register',(req, res) => {
 
   const userID = createUser(email, hashedPassword, users);
   req.session.user_id = userID;
+  console.log(req.session.user_id);
   res.redirect("/urls");
 });
 
