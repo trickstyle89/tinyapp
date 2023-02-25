@@ -114,6 +114,8 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+
+//delete urls post
 app.post("/urls/:shortURL/delete", (req,res) => {
   const shortURL = req.params.shortURL;
   let idMatchedVar = 0;
@@ -126,6 +128,8 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   res.redirect("/urls");
 });
 
+
+//delete urls render
 app.get("/urls/:shortURL/delete", (req,res) => {
   const shortURL = req.params.shortURL;
   let idMatchedVar = 0;
@@ -136,7 +140,7 @@ app.get("/urls/:shortURL/delete", (req,res) => {
   }
 });
 
-//Update(CRUD) the long URL
+//Update the long URL
 app.post("/urls/:id", (req,res) => {
   const id = req.params.id;
   urlDatabase[id].longURL = req.body.quoteContent;
@@ -160,7 +164,7 @@ app.post("/login", (req,res) => {
   }
 });
 
-//This request helps user to log out if logged in
+//This request to log out if logged in
 app.post("/logout", (req,res) => {
   req.session = null;
   res.redirect("/urls");
@@ -180,8 +184,8 @@ app.get('/login', (req, res) => {
   }
 });
 
-//register GET render
 
+//register GET render
 app.get('/register',(req,res) => {
   const userId = req.session.user_id;
   const loggedInUser = users[userId];
@@ -211,7 +215,6 @@ app.post('/register',(req, res) => {
 
   const userID = createUser(email, hashedPassword, users);
   req.session.user_id = userID;
-  console.log(req.session.user_id);
   res.redirect("/urls");
 });
 
