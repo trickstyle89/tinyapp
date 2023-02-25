@@ -1,16 +1,16 @@
+const { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId } = require('./helpers');
 const cookieSession = require('cookie-session');
 const express = require("express");
-const { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId } = require('./helpers');
+const bodyParser = require("body-parser");
 const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
-  keys: ["cookie session to encrypt the values"],
+  keys: ['Kariya', 'McDavid', 'Bure'],
 }));
 
 const urlDatabase = {
@@ -23,21 +23,35 @@ const urlDatabase = {
     userID: "aJ48lW"
   },
   i3DoGr: {
-    longURL: "https://www.google.ca",
+    longURL: "https:/s/www.google.ca",
     userID: "aJ42lW"
   }
 };
+//encyption
+const hashThePassword = (password) => {
+  const salt = bcrypt.genSaltSync(10);
+  return bcrypt.hashSync(password, salt);
+};
 
-const password = "111";
-const hashedPassword = bcrypt.hashSync(password, 10);
+//encrypt the user in object. **only once
+const hashPasswords = (users) => {
+  for (const userId in users) {
+    const user = users[userId];
+    user.password = hashThePassword(user.password);
+  }
+};
+
 
 const users = {
   "aJ48lW": {
     id: "aJ48lW",
     email: "chewsstory@gmail.comm",
-    password: hashedPassword,
+    password: '111',
   }
 };
+hashPasswords(users);
+console.log(users);
+
 
 app.get("/", (req, res) => {
   const userId = req.session.user_id;
@@ -185,6 +199,8 @@ app.get('/login', (req, res) => {
     res.render('login', templateVars);
   }
 });
+
+//register GET render
 
 app.get('/register',(req,res) => {
   const userId = req.session.user_id;
