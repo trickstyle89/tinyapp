@@ -78,6 +78,8 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+
+// creation of short URL save page with cookies enables
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session.user_id;
   const loggedInUser = users[userId];
@@ -98,6 +100,7 @@ app.get("/urls/:shortURL", (req, res) => {
   }
   res.render("urls_show", templateVars);
 });
+
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
