@@ -28,6 +28,7 @@ const urlDatabase = {
   }
 };
 
+//empty users object for storing user information
 const users = {
 };
 
