@@ -31,8 +31,10 @@ const urlDatabase = {
 const users = {
 };
 
+// This would hash their users passwords in USERS Object.
 hashUserObjPasswords(users);
 
+//redirection of homepage to login or urls index
 app.get("/", (req, res) => {
   const userId = req.session.user_id;
   const loggedInUser = users[userId];
@@ -43,8 +45,8 @@ app.get("/", (req, res) => {
   }
 });
 
+//verifies the cookie to display the user name in every page if logged in
 app.get("/urls", (req, res) => {
-  //verifies the cookie to display the user name in every page if logged in
   const userId = req.session.user_id;
   const loggedInUser = users[userId];
   const shortUrlFound = urlsForUser(userId, urlDatabase);
@@ -55,6 +57,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//random SHORTURL generator
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomId();
   const userId = req.session.user_id;
@@ -65,6 +68,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+//creation of new urls
 app.get("/urls/new", (req, res) => {
   const userId = req.session.user_id;
   const loggedInUser = users[userId];
@@ -77,7 +81,6 @@ app.get("/urls/new", (req, res) => {
     res.redirect('/login');
   }
 });
-
 
 // creation of short URL save page with cookies enables
 app.get("/urls/:shortURL", (req, res) => {
@@ -101,7 +104,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-
+//short URL database checker
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const userId = req.session.user_id;
@@ -116,7 +119,6 @@ app.get("/u/:shortURL", (req, res) => {
     res.render('error.ejs', templateVars);
   }
 });
-
 
 //delete urls post
 app.post("/urls/:shortURL/delete", (req,res) => {
@@ -141,7 +143,7 @@ app.post("/urls/:id", (req,res) => {
 //Implementing Cookies
 app.post("/login", (req,res) => {
   const { email, password } = req.body;
-  const userFoundByEmail = getUserByEmail(email, users);  
+  const userFoundByEmail = getUserByEmail(email, users);
   console.log(userFoundByEmail);
   if (!userFoundByEmail) {
     res.status(403).send("User cannot be found");
@@ -161,7 +163,6 @@ app.post("/logout", (req,res) => {
   res.redirect("/urls");
 });
 
-
 //Implement User Registration and Login
 app.get('/login', (req, res) => {
   const userId = req.session.user_id;
@@ -175,7 +176,6 @@ app.get('/login', (req, res) => {
   }
 });
 
-
 //register GET render
 app.get('/register',(req,res) => {
   const userId = req.session.user_id;
@@ -187,7 +187,6 @@ app.get('/register',(req,res) => {
   } else {
     res.render('register', templateVars);
   }
-  
 });
 
 //Registering new users and checking for Errors
@@ -212,4 +211,3 @@ app.post('/register',(req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
