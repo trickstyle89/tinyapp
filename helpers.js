@@ -51,5 +51,19 @@ const generateRandomId = function() {
   return Math.random().toString(36).substring(2,8);
 };
 
+//encyption
+const hashThePassword = (password) => {
+  const salt = bcrypt.genSaltSync(10);
+  return bcrypt.hashSync(password, salt);
+};
 
-module.exports = { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId };
+//encrypt the user in object. **only once
+const hashUserObjPasswords = (users) => {
+  for (const userId in users) {
+    const user = users[userId];
+    user.password = hashThePassword(user.password);
+  }
+};
+
+
+module.exports = { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId, hashUserObjPasswords, hashThePassword };

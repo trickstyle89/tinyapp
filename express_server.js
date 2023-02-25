@@ -1,4 +1,4 @@
-const { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId } = require('./helpers');
+const { urlsForUser, createUser, getUserByEmail, idMatched, generateRandomId, hashThePassword, hashUserObjPasswords } = require('./helpers');
 const cookieSession = require('cookie-session');
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -34,13 +34,12 @@ const hashThePassword = (password) => {
 };
 
 //encrypt the user in object. **only once
-const hashPasswords = (users) => {
+const hashUserObjPasswords = (users) => {
   for (const userId in users) {
     const user = users[userId];
     user.password = hashThePassword(user.password);
   }
 };
-
 
 const users = {
   "aJ48lW": {
@@ -49,7 +48,8 @@ const users = {
     password: '111',
   }
 };
-hashPasswords(users);
+
+hashUserObjPasswords(users);
 console.log(users);
 
 
