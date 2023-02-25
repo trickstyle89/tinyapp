@@ -154,7 +154,7 @@ app.post("/urls/:id", (req,res) => {
 //Implementing Cookies
 app.post("/login", (req,res) => {
   const { email, password } = req.body;
-  const userFoundByEmail = getUserByEmail(email, users);  //can be fixed, maybe have
+  const userFoundByEmail = getUserByEmail(email, users);  
   console.log(userFoundByEmail);
   if (!userFoundByEmail) {
     res.status(403).send("User cannot be found");
@@ -216,7 +216,7 @@ app.post('/register',(req, res) => {
   if (userFound) {
     res.status(400).send("User already exists!");
   }
-
+e
   const userID = createUser(email, hashedPassword, users);
   req.session.user_id = userID;
   console.log(req.session.user_id);
