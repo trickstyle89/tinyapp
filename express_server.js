@@ -32,8 +32,6 @@ const users = {
 };
 
 hashUserObjPasswords(users);
-console.log(users);
-
 
 app.get("/", (req, res) => {
   const userId = req.session.user_id;
@@ -46,8 +44,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  //verifies the cookie to remain set on multiple pages
-  //and to display the user name in every page if logged in
+  //verifies the cookie to display the user name in every page if logged in
   const userId = req.session.user_id;
   const loggedInUser = users[userId];
   const shortUrlFound = urlsForUser(userId, urlDatabase);
