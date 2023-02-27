@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require('bcryptjs');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -65,8 +65,14 @@ app.get("/urls", (req, res) => {
 //random SHORTURL generator
 app.post("/urls", (req, res) => {
   
+  const userId = req.session.user_id;    // addition of user Login check
+  if (userId) {
+    res.redirect('/urls');
+  } else {
+    res.send("You are not logged in!!");
+  }
+
   let shortURL = generateRandomId();
-  const userId = req.session.user_id;
   
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
@@ -156,6 +162,13 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 
 //Update the long URL
 app.post("/urls/:id", (req,res) => {
+  
+  const userId = req.session.user_id;    // addition of user Login check
+  if (userId) {
+    res.redirect('/urls');
+  } else {
+    res.send("You are not logged in!!");
+  }
   
   const id = req.params.id;
   

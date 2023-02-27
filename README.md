@@ -20,8 +20,9 @@ test. Another important skill was how to debug code and this goes back to increm
 - cookie-session
 - cookie-parser *** was replaced with cookie-session
 - method-override *** installed but never implemented due to time constraints
+- nodemon
 
 ## Getting Started
 
 - Install all dependencies (using the `npm install` command).
-- Run the development web server using the `node express_server.js` command.
+- Run the development web server using the `npm start` command due to Nodemon being installed to reduce hassle of restarting the server manually all the time.
