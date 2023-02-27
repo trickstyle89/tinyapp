@@ -193,7 +193,7 @@ app.post("/login", (req,res) => {
 //This request to log out if logged in
 app.post("/logout", (req,res) => {
   req.session = null;
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 //Implement User Registration and Login
