@@ -65,10 +65,11 @@ app.get("/urls", (req, res) => {
 //random SHORTURL generator
 app.post("/urls", (req, res) => {
   
-  const userId = req.session.user_id;    // addition of user Login check
+  const userId = req.session.user_id;    // addition of user Login check Minor fix
   if (userId) {
     res.redirect('/urls');
   } else {
+
     res.send("You are not logged in!!");
   }
 
@@ -104,11 +105,17 @@ app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session.user_id;
   const loggedInUser = users[userId];
 
-  if (!urlDatabase[req.params.shortURL]) {
-    res.send("Id does not exist in user database!!");
+  if (!urlDatabase[req.params.shortURL]) {  // cannot read id. !== users[userId].id
+    res.send("Sorry, you dont have permission to edit other user's url");
     return;
   }
   
+  /* 
+  if (!urlDatabase[req.params.shortURL]) {    // redundant code here 
+    res.send("Id does not exist in user database!!");
+    return;
+  }
+  */
   const longURL = urlDatabase[req.params.shortURL].longURL;
   const templateVars = {
   
@@ -116,10 +123,6 @@ app.get("/urls/:shortURL", (req, res) => {
     shortURL: req.params.shortURL,
     longURL: longURL,
   };
-  if (urlDatabase[req.params.shortURL].userID !== users[userId].id) {
-    res.send("Sorry, you dont have permission to edit other user's url");
-    return;
-  }
   res.render("urls_show", templateVars);
 });
 
@@ -162,13 +165,6 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 
 //Update the long URL
 app.post("/urls/:id", (req,res) => {
-  
-  const userId = req.session.user_id;    // addition of user Login check
-  if (userId) {
-    res.redirect('/urls');
-  } else {
-    res.send("You are not logged in!!");
-  }
   
   const id = req.params.id;
   
