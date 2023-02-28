@@ -65,11 +65,10 @@ app.get("/urls", (req, res) => {
 //random SHORTURL generator
 app.post("/urls", (req, res) => {
   
-  const userId = req.session.user_id;    // addition of user Login check Minor fix
+  const userId = req.session.user_id;
   if (userId) {
     res.redirect('/urls');
   } else {
-
     res.send("You are not logged in!!");
   }
 
@@ -145,14 +144,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls/:shortURL/delete", (req,res) => {
   
   const shortURL = req.params.shortURL;
-  let idMatchedVar = 0;
-  
-  idMatchedVar = idMatched(shortURL, users, urlDatabase);
-  
-  if (!idMatchedVar) {
-    res.send("Sorry, you dont have permission to delete other user's url");
-    return;
-  }
+
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
