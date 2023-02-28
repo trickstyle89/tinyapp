@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require('bcryptjs');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8081; // default port 8080
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -121,25 +121,33 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 //short URL database checker
-app.get("/u/:shortURL", (req, res) => {
-  
-  const shortURL = req.params.shortURL;
+app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session.user_id;
   const loggedInUser = users[userId];
-  const templateVars = {
-  
-    user: loggedInUser,
-  };
 
-  if (urlDatabase[shortURL]) {
-    
-    const longURL = urlDatabase[req.params.shortURL].longURL;
-    
-    res.redirect(longURL);
-  } else {
-    res.render('error.ejs', templateVars);
+  // Check if the shortURL exists in the urlDatabase
+  if (!urlDatabase[req.params.shortURL]) {
+    res.send("Sorry, the requested URL does not exist");
+    return;
   }
+
+  // Check if the userID associated with the shortURL matches the currently logged-in user
+  const urlUserId = urlDatabase[req.params.shortURL].userID;
+  if (urlUserId !== userId) {
+    res.send("Sorry, you don't have permission to access this URL");
+    return;
+  }
+
+  // If both checks pass, render the urls_show template
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  const templateVars = {
+    user: loggedInUser,
+    shortURL: req.params.shortURL,
+    longURL: longURL,
+  };
+  res.render("urls_show", templateVars);
 });
+
 
 //delete urls post
 app.post("/urls/:shortURL/delete", (req,res) => {
@@ -158,13 +166,33 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 });
 
 //Update the long URL
-app.post("/urls/:id", (req,res) => {
+app.post("/urls/:id", (req,res) => {  // *******
+  const userId = req.session.user_id;
+  const loggedInUser = users[userId];
   
-  const id = req.params.id;
+  // Check if the shortURL exists in the urlDatabase
+  if (!urlDatabase[req.params.shortURL]) {
+    res.send("Sorry, the requested URL does not exist");
+    return;
+  }
   
-  urlDatabase[id].longURL = req.body.quoteContent;
-  res.redirect("/urls");
+  // Check if the userID associated with the shortURL matches the currently logged-in user
+  const urlUserId = urlDatabase[req.params.shortURL].userID;
+  if (urlUserId !== userId) {
+    res.send("Sorry, you don't have permission to access this URL");
+    return;
+  }
+  
+  // If both checks pass, render the urls_show template
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  const templateVars = {
+    user: loggedInUser,
+    shortURL: req.params.shortURL,
+    longURL: longURL,
+  };
+  res.render("urls_show", templateVars);
 });
+  
 
 //Implementing Cookies
 app.post("/login", (req,res) => {
